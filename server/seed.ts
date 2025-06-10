@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { categories, designs, testimonials } from "@shared/schema";
+import { categories, designs, testimonials, motifs } from "@shared/schema";
 
 async function seed() {
   console.log("🌱 Seeding database...");
@@ -122,32 +122,114 @@ async function seed() {
   const testimonialData = [
     {
       name: "Priya Sharma",
-      imageUrl: "https://images.unsplash.com/photo-1494790108755-2616b612b5bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200",
       location: "Mumbai, Maharashtra",
-      text: "The embroidery work on my wedding lehenga was absolutely stunning. The artisans at Kashmir Tella Works are truly masters of their craft.",
+      text: "The embroidery work on my wedding shawl was absolutely breathtaking. The attention to detail and traditional craftsmanship exceeded all my expectations. It became the highlight of my special day!",
       rating: 5,
+      imageUrl: "https://images.unsplash.com/photo-1607746882042-944635dfe10e?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&h=150",
       isActive: true
     },
     {
       name: "Anjali Gupta",
-      imageUrl: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200",
-      location: "Delhi",
-      text: "I ordered a custom neckline design and the quality exceeded my expectations. Beautiful traditional work with modern finishing.",
+      location: "Delhi, India",
+      text: "I sent my grandmother's old kurta for restoration and embroidery. The team not only preserved its sentimental value but enhanced it beautifully. The courier process was so smooth and secure.",
       rating: 5,
+      imageUrl: "https://images.unsplash.com/photo-1607746882042-944635dfe10e?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&h=150",
       isActive: true
     },
     {
-      name: "Meera Joshi",
-      imageUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200",
+      name: "Meera Reddy",
       location: "Bangalore, Karnataka",
-      text: "The attention to detail and authentic Kashmiri craftsmanship is remarkable. Highly recommend for anyone looking for quality embroidery.",
+      text: "The floral border design on my silk dupatta is simply stunning. The color combination they suggested was perfect, and the quality of thread work is museum-worthy. Highly recommend!",
       rating: 5,
+      imageUrl: "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&h=150",
       isActive: true
     }
   ];
 
   const insertedTestimonials = await db.insert(testimonials).values(testimonialData).returning();
   console.log(`✅ Inserted ${insertedTestimonials.length} testimonials`);
+
+  // Seed Motifs
+  const motifData = [
+    {
+      name: "Traditional Paisley",
+      category: "Classic",
+      description: "Iconic teardrop-shaped motifs with intricate details",
+      imageUrl: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400",
+      complexity: "Medium",
+      applications: ["Neckline", "Border", "All-over"]
+    },
+    {
+      name: "Chinar Leaf",
+      category: "Nature",
+      description: "Kashmir's iconic maple leaf in various sizes",
+      imageUrl: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400",
+      complexity: "Simple",
+      applications: ["Border", "Corner", "Scattered"]
+    },
+    {
+      name: "Rose Garden",
+      category: "Floral",
+      description: "Delicate roses with stems and leaves",
+      imageUrl: "https://images.unsplash.com/photo-1571115764595-644a1f56a55c?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400",
+      complexity: "Complex",
+      applications: ["All-over", "Panel", "Dupatta"]
+    },
+    {
+      name: "Geometric Diamond",
+      category: "Contemporary",
+      description: "Modern diamond patterns with clean lines",
+      imageUrl: "https://images.unsplash.com/photo-1583391733981-6c1c6a8b93ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400",
+      complexity: "Simple",
+      applications: ["Border", "Repeat Pattern", "Neckline"]
+    },
+    {
+      name: "Vine Scroll",
+      category: "Traditional",
+      description: "Flowing vine patterns with small flowers",
+      imageUrl: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400",
+      complexity: "Medium",
+      applications: ["Border", "Sleeve", "Hem"]
+    },
+    {
+      name: "Lotus Blossom",
+      category: "Floral",
+      description: "Sacred lotus flowers in full bloom",
+      imageUrl: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400",
+      complexity: "Complex",
+      applications: ["Center Panel", "Medallion", "Corner"]
+    },
+    {
+      name: "Buti Dots",
+      category: "Classic",
+      description: "Small decorative dots and mini paisleys",
+      imageUrl: "https://images.unsplash.com/photo-1571115764595-644a1f56a55c?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400",
+      complexity: "Simple",
+      applications: ["Fill Pattern", "Background", "Scattered"]
+    },
+    {
+      name: "Persian Arch",
+      category: "Architectural",
+      description: "Ornate arches with detailed borders",
+      imageUrl: "https://images.unsplash.com/photo-1583391733981-6c1c6a8b93ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400",
+      complexity: "Complex",
+      applications: ["Panel", "Yoke", "Central Design"]
+    },
+    {
+      name: "Almond Cluster",
+      category: "Nature",
+      description: "Groups of almonds with decorative leaves",
+      imageUrl: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400",
+      complexity: "Medium",
+      applications: ["Repeat Pattern", "Border", "Corner"]
+    }
+  ];
+
+  const insertedMotifs = await db.insert(motifs).values(motifData.map(m => ({
+    ...m,
+    createdAt: new Date()
+  }))).returning();
+  console.log(`✅ Inserted ${insertedMotifs.length} motifs`);
 
   console.log("🎉 Database seeding completed successfully!");
 }
