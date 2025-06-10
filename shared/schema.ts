@@ -47,6 +47,7 @@ export const orders = pgTable("orders", {
   trackingId: text("tracking_id"),
   courierPartner: text("courier_partner"),
   estimatedDelivery: timestamp("estimated_delivery"),
+  userId: integer("user_id").references(() => users.id), // Nullable for now
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -59,6 +60,14 @@ export const testimonials = pgTable("testimonials", {
   rating: integer("rating").notNull(),
   imageUrl: text("image_url"),
   isActive: boolean("is_active").default(true),
+});
+
+export const users = pgTable("users", {
+  id: serial("id").primaryKey(),
+  email: text("email").notNull().unique(),
+  passwordHash: text("password_hash").notNull(),
+  role: text("role").notNull().default("user"),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
 export const insertCategorySchema = createInsertSchema(categories).omit({
@@ -82,12 +91,19 @@ export const insertTestimonialSchema = createInsertSchema(testimonials).omit({
   id: true,
 });
 
+export const insertUserSchema = createInsertSchema(users).omit({
+  id: true,
+  createdAt: true,
+});
+
 export type Category = typeof categories.$inferSelect;
 export type Design = typeof designs.$inferSelect;
 export type Order = typeof orders.$inferSelect;
 export type Testimonial = typeof testimonials.$inferSelect;
+export type User = typeof users.$inferSelect;
 
 export type InsertCategory = z.infer<typeof insertCategorySchema>;
 export type InsertDesign = z.infer<typeof insertDesignSchema>;
 export type InsertOrder = z.infer<typeof insertOrderSchema>;
 export type InsertTestimonial = z.infer<typeof insertTestimonialSchema>;
+export type InsertUser = z.infer<typeof insertUserSchema>;
