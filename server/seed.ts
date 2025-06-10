@@ -2,7 +2,15 @@ import { db } from "./db";
 import { categories, designs, testimonials, motifs } from "@shared/schema";
 
 async function seed() {
-  console.log("🌱 Seeding database...");
+  console.log("🌱 Starting seed process...");
+
+  // Clear existing data
+  console.log("Clearing existing data...");
+  await db.delete(designs);
+  await db.delete(categories);
+  await db.delete(testimonials);
+  await db.delete(motifs);
+  console.log("✅ Existing data cleared");
 
   // Seed categories
   const categoryData = [
@@ -149,86 +157,59 @@ async function seed() {
   const insertedTestimonials = await db.insert(testimonials).values(testimonialData).returning();
   console.log(`✅ Inserted ${insertedTestimonials.length} testimonials`);
 
-  // Seed Motifs
+  // Seed motifs
   const motifData = [
     {
-      name: "Traditional Paisley",
-      category: "Classic",
-      description: "Iconic teardrop-shaped motifs with intricate details",
-      imageUrl: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400",
+      name: "Floral",
+      description: "Traditional Kashmiri flowers",
+      imageUrl: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300",
+      category: "Traditional",
       complexity: "Medium",
-      applications: ["Neckline", "Border", "All-over"]
+      applications: ["Neckline", "Border", "All-over"],
     },
     {
       name: "Chinar Leaf",
+      description: "Iconic maple leaf patterns",
+      imageUrl: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300",
       category: "Nature",
-      description: "Kashmir's iconic maple leaf in various sizes",
-      imageUrl: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400",
-      complexity: "Simple",
-      applications: ["Border", "Corner", "Scattered"]
+      complexity: "Medium",
+      applications: ["Border", "All-over", "Shawl"],
+    },
+    {
+      name: "Paisley Buti",
+      description: "Classic paisley motifs",
+      imageUrl: "https://images.unsplash.com/photo-1571115764595-644a1f56a55c?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300",
+      category: "Classic",
+      complexity: "High",
+      applications: ["All-over", "Border", "Neckline"],
+    },
+    {
+      name: "Geometric",
+      description: "Modern geometric patterns",
+      imageUrl: "https://images.unsplash.com/photo-1583391733981-6c1c6a8b93ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300",
+      category: "Contemporary",
+      complexity: "Medium",
+      applications: ["Border", "Sleeve", "Panel"],
     },
     {
       name: "Rose Garden",
+      description: "Delicate rose patterns",
+      imageUrl: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300",
       category: "Floral",
-      description: "Delicate roses with stems and leaves",
-      imageUrl: "https://images.unsplash.com/photo-1571115764595-644a1f56a55c?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400",
-      complexity: "Complex",
-      applications: ["All-over", "Panel", "Dupatta"]
+      complexity: "High",
+      applications: ["All-over", "Border", "Neckline"],
     },
     {
-      name: "Geometric Diamond",
-      category: "Contemporary",
-      description: "Modern diamond patterns with clean lines",
-      imageUrl: "https://images.unsplash.com/photo-1583391733981-6c1c6a8b93ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400",
-      complexity: "Simple",
-      applications: ["Border", "Repeat Pattern", "Neckline"]
-    },
-    {
-      name: "Vine Scroll",
-      category: "Traditional",
-      description: "Flowing vine patterns with small flowers",
-      imageUrl: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400",
+      name: "Vine Border",
+      description: "Elegant vine patterns",
+      imageUrl: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300",
+      category: "Border",
       complexity: "Medium",
-      applications: ["Border", "Sleeve", "Hem"]
-    },
-    {
-      name: "Lotus Blossom",
-      category: "Floral",
-      description: "Sacred lotus flowers in full bloom",
-      imageUrl: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400",
-      complexity: "Complex",
-      applications: ["Center Panel", "Medallion", "Corner"]
-    },
-    {
-      name: "Buti Dots",
-      category: "Classic",
-      description: "Small decorative dots and mini paisleys",
-      imageUrl: "https://images.unsplash.com/photo-1571115764595-644a1f56a55c?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400",
-      complexity: "Simple",
-      applications: ["Fill Pattern", "Background", "Scattered"]
-    },
-    {
-      name: "Persian Arch",
-      category: "Architectural",
-      description: "Ornate arches with detailed borders",
-      imageUrl: "https://images.unsplash.com/photo-1583391733981-6c1c6a8b93ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400",
-      complexity: "Complex",
-      applications: ["Panel", "Yoke", "Central Design"]
-    },
-    {
-      name: "Almond Cluster",
-      category: "Nature",
-      description: "Groups of almonds with decorative leaves",
-      imageUrl: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400",
-      complexity: "Medium",
-      applications: ["Repeat Pattern", "Border", "Corner"]
+      applications: ["Border", "Sleeve", "Hem"],
     }
   ];
 
-  const insertedMotifs = await db.insert(motifs).values(motifData.map(m => ({
-    ...m,
-    createdAt: new Date()
-  }))).returning();
+  const insertedMotifs = await db.insert(motifs).values(motifData).returning();
   console.log(`✅ Inserted ${insertedMotifs.length} motifs`);
 
   console.log("🎉 Database seeding completed successfully!");

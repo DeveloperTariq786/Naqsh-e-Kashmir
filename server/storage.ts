@@ -1,10 +1,10 @@
 import { 
-  categories, designs, orders, testimonials, users, motifs, // Added motifs table
-  type Category, type Design, type Order, type Testimonial, type User, type Motif, // Added Motif type
-  type InsertCategory, type InsertDesign, type InsertOrder, type InsertTestimonial, type InsertUser, type InsertMotif // Added InsertMotif type
+  categories, designs, orders, testimonials, users, motifs,
+  type Category, type Design, type Order, type Testimonial, type User, type Motif,
+  type InsertCategory, type InsertDesign, type InsertOrder, type InsertTestimonial, type InsertUser, type InsertMotif
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and, SQL } from "drizzle-orm"; // Added SQL for dynamic conditions
+import { eq, and, SQL } from "drizzle-orm";
 
 export interface IStorage {
   // Categories
@@ -44,506 +44,7 @@ export interface IStorage {
   createMotif(motif: InsertMotif): Promise<Motif>;
 }
 
-export class MemStorage implements IStorage {
-  private categories: Map<number, Category> = new Map();
-  private designs: Map<number, Design> = new Map();
-  private orders: Map<string, Order> = new Map();
-  private testimonials: Map<number, Testimonial> = new Map();
-  private users: Map<number, User> = new Map();
-  private motifs: Map<number, Motif> = new Map(); // Added motifs map
-  private currentCategoryId = 1;
-  private currentDesignId = 1;
-  private currentOrderId = 1;
-  private currentTestimonialId = 1;
-  private currentUserId = 1;
-  private currentMotifId = 1; // Added currentMotifId
-
-  constructor() {
-    this.seedData();
-  }
-
-  private seedData() {
-    // Seed categories
-    const categoryData = [
-      {
-        name: "Neckline Designs",
-        slug: "neckline",
-        description: "Intricate neckline embroidery patterns",
-        imageUrl: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
-        designCount: 45
-      },
-      {
-        name: "Borders",
-        slug: "borders",
-        description: "Traditional border patterns with floral motifs",
-        imageUrl: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
-        designCount: 32
-      },
-      {
-        name: "Shawls",
-        slug: "shawls",
-        description: "Beautiful shawl designs with paisley patterns",
-        imageUrl: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
-        designCount: 28
-      },
-      {
-        name: "Sleeves",
-        slug: "sleeves",
-        description: "Elegant sleeve embroidery designs",
-        imageUrl: "https://images.unsplash.com/photo-1564557287817-3785e38ec1f5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
-        designCount: 38
-      },
-      {
-        name: "Floral",
-        slug: "floral",
-        description: "Detailed floral embroidery patterns",
-        imageUrl: "https://images.unsplash.com/photo-1515377905703-c4788e51af15?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
-        designCount: 52
-      },
-      {
-        name: "Pheran",
-        slug: "pheran",
-        description: "Traditional Kashmiri pheran designs",
-        imageUrl: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
-        designCount: 21
-      }
-    ];
-
-    categoryData.forEach(cat => {
-      const category: Category = { 
-        id: this.currentCategoryId++,
-        name: cat.name,
-        slug: cat.slug,
-        description: cat.description || null,
-        imageUrl: cat.imageUrl || null,
-        designCount: cat.designCount || 0
-      };
-      this.categories.set(category.id, category);
-    });
-
-    // Seed designs
-    const designData: InsertDesign[] = [
-      {
-        name: "Golden Paisley Neckline",
-        description: "Intricate paisley patterns with gold thread work perfect for formal kurtas and pherans.",
-        categoryId: 1,
-        imageUrl: "https://images.unsplash.com/photo-1544441893-675973e31985?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
-        additionalImages: [],
-        priceMin: 2500,
-        priceMax: 4200,
-        estimatedDays: 8,
-        isPopular: true,
-        isFeatured: true,
-        placement: "Neckline",
-        fabricTypes: ["Cotton", "Silk", "Georgette"]
-      },
-      {
-        name: "Rose Garden Border",
-        description: "Delicate rose motifs with vine patterns, ideal for shawl and dupatta borders.",
-        categoryId: 2,
-        imageUrl: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
-        additionalImages: [],
-        priceMin: 1800,
-        priceMax: 3500,
-        estimatedDays: 6,
-        isPopular: true,
-        isFeatured: true,
-        placement: "Border",
-        fabricTypes: ["Silk", "Chiffon", "Cotton"]
-      },
-      {
-        name: "Chinar Leaf Sleeves",
-        description: "Iconic chinar leaf motifs with traditional color combinations for sleeve embellishments.",
-        categoryId: 4,
-        imageUrl: "https://images.unsplash.com/photo-1564557287817-3785e38ec1f5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
-        additionalImages: [],
-        priceMin: 2200,
-        priceMax: 3800,
-        estimatedDays: 7,
-        isPopular: false,
-        isFeatured: true,
-        placement: "Sleeves",
-        fabricTypes: ["Cotton", "Linen", "Silk"]
-      },
-      {
-        name: "Royal Shawl Pattern",
-        description: "Full coverage design with royal motifs and premium gold thread work for special occasions.",
-        categoryId: 3,
-        imageUrl: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
-        additionalImages: [],
-        priceMin: 4500,
-        priceMax: 7200,
-        estimatedDays: 12,
-        isPopular: false,
-        isFeatured: true,
-        placement: "All Over",
-        fabricTypes: ["Pashmina", "Silk", "Wool"]
-      }
-    ];
-
-    designData.forEach(design => {
-      const newDesign: Design = { 
-        id: this.currentDesignId++,
-        name: design.name,
-        description: design.description,
-        categoryId: design.categoryId || null,
-        imageUrl: design.imageUrl,
-        additionalImages: design.additionalImages || [],
-        priceMin: design.priceMin,
-        priceMax: design.priceMax,
-        estimatedDays: design.estimatedDays,
-        isPopular: design.isPopular || false,
-        isFeatured: design.isFeatured || false,
-        placement: design.placement || null,
-        fabricTypes: design.fabricTypes || [],
-        createdAt: new Date()
-      };
-      this.designs.set(newDesign.id, newDesign);
-    });
-
-    // Seed testimonials
-    const testimonialData: InsertTestimonial[] = [
-      {
-        name: "Priya Sharma",
-        location: "Mumbai, Maharashtra",
-        text: "The embroidery work on my wedding shawl was absolutely breathtaking. The attention to detail and traditional craftsmanship exceeded all my expectations. It became the highlight of my special day!",
-        rating: 5,
-        imageUrl: "https://images.unsplash.com/photo-1607746882042-944635dfe10e?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&h=150",
-        isActive: true
-      },
-      {
-        name: "Anjali Gupta",
-        location: "Delhi, India",
-        text: "I sent my grandmother's old kurta for restoration and embroidery. The team not only preserved its sentimental value but enhanced it beautifully. The courier process was so smooth and secure.",
-        rating: 5,
-        imageUrl: "https://images.unsplash.com/photo-1607746882042-944635dfe10e?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&h=150",
-        isActive: true
-      },
-      {
-        name: "Meera Reddy",
-        location: "Bangalore, Karnataka",
-        text: "The floral border design on my silk dupatta is simply stunning. The color combination they suggested was perfect, and the quality of thread work is museum-worthy. Highly recommend!",
-        rating: 5,
-        imageUrl: "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&h=150",
-        isActive: true
-      }
-    ];
-
-    testimonialData.forEach(testimonial => {
-      const newTestimonial: Testimonial = { 
-        id: this.currentTestimonialId++,
-        name: testimonial.name,
-        location: testimonial.location,
-        text: testimonial.text,
-        rating: testimonial.rating,
-        imageUrl: testimonial.imageUrl || null,
-        isActive: testimonial.isActive !== false
-      };
-      this.testimonials.set(newTestimonial.id, newTestimonial);
-    });
-
-    // Seed Motifs
-    const motifData: Omit<InsertMotif, 'createdAt'>[] = [
-      {
-        name: "Traditional Paisley",
-        category: "Classic",
-        description: "Iconic teardrop-shaped motifs with intricate details",
-        imageUrl: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400",
-        complexity: "Medium",
-        applications: ["Neckline", "Border", "All-over"]
-      },
-      {
-        name: "Chinar Leaf",
-        category: "Nature",
-        description: "Kashmir's iconic maple leaf in various sizes",
-        imageUrl: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400",
-        complexity: "Simple",
-        applications: ["Border", "Corner", "Scattered"]
-      },
-      {
-        name: "Rose Garden",
-        category: "Floral",
-        description: "Delicate roses with stems and leaves",
-        imageUrl: "https://images.unsplash.com/photo-1571115764595-644a1f56a55c?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400",
-        complexity: "Complex",
-        applications: ["All-over", "Panel", "Dupatta"]
-      },
-      {
-        name: "Geometric Diamond",
-        category: "Contemporary",
-        description: "Modern diamond patterns with clean lines",
-        imageUrl: "https://images.unsplash.com/photo-1583391733981-6c1c6a8b93ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400",
-        complexity: "Simple",
-        applications: ["Border", "Repeat Pattern", "Neckline"]
-      },
-      {
-        name: "Vine Scroll",
-        category: "Traditional",
-        description: "Flowing vine patterns with small flowers",
-        imageUrl: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400",
-        complexity: "Medium",
-        applications: ["Border", "Sleeve", "Hem"]
-      },
-      {
-        name: "Lotus Blossom",
-        category: "Floral",
-        description: "Sacred lotus flowers in full bloom",
-        imageUrl: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400",
-        complexity: "Complex",
-        applications: ["Center Panel", "Medallion", "Corner"]
-      },
-      {
-        name: "Buti Dots",
-        category: "Classic",
-        description: "Small decorative dots and mini paisleys",
-        imageUrl: "https://images.unsplash.com/photo-1571115764595-644a1f56a55c?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400",
-        complexity: "Simple",
-        applications: ["Fill Pattern", "Background", "Scattered"]
-      },
-      {
-        name: "Persian Arch",
-        category: "Architectural",
-        description: "Ornate arches with detailed borders",
-        imageUrl: "https://images.unsplash.com/photo-1583391733981-6c1c6a8b93ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400",
-        complexity: "Complex",
-        applications: ["Panel", "Yoke", "Central Design"]
-      },
-      {
-        name: "Almond Cluster",
-        category: "Nature",
-        description: "Groups of almonds with decorative leaves",
-        imageUrl: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400",
-        complexity: "Medium",
-        applications: ["Repeat Pattern", "Border", "Corner"]
-      }
-    ];
-
-    motifData.forEach(m => {
-      const motifToCreate: InsertMotif = {
-        name: m.name,
-        description: m.description,
-        imageUrl: m.imageUrl,
-        category: m.category,
-        complexity: m.complexity,
-        applications: m.applications || [],
-      };
-      this.createMotif(motifToCreate); // createMotif is synchronous in MemStorage
-    });
-  }
-
-  async getCategories(): Promise<Category[]> {
-    return Array.from(this.categories.values());
-  }
-
-  async getCategoryBySlug(slug: string): Promise<Category | undefined> {
-    return Array.from(this.categories.values()).find(cat => cat.slug === slug);
-  }
-
-  async createCategory(category: InsertCategory): Promise<Category> {
-    const newCategory: Category = { 
-      id: this.currentCategoryId++,
-      name: category.name,
-      slug: category.slug,
-      description: category.description || null,
-      imageUrl: category.imageUrl || null,
-      designCount: 0
-    };
-    this.categories.set(newCategory.id, newCategory);
-    return newCategory;
-  }
-
-  async getDesigns(filters?: {
-    categoryId?: number;
-    priceMin?: number;
-    priceMax?: number;
-    sortBy?: 'popular' | 'newest' | 'price_asc' | 'price_desc';
-  }): Promise<Design[]> {
-    let designs = Array.from(this.designs.values());
-
-    if (filters?.categoryId) {
-      designs = designs.filter(d => d.categoryId === filters.categoryId);
-    }
-
-    if (filters?.priceMin) {
-      designs = designs.filter(d => d.priceMax >= filters.priceMin!);
-    }
-
-    if (filters?.priceMax) {
-      designs = designs.filter(d => d.priceMin <= filters.priceMax!);
-    }
-
-    if (filters?.sortBy) {
-      switch (filters.sortBy) {
-        case 'popular':
-          designs.sort((a, b) => (b.isPopular ? 1 : 0) - (a.isPopular ? 1 : 0));
-          break;
-        case 'newest':
-          designs.sort((a, b) => b.createdAt!.getTime() - a.createdAt!.getTime());
-          break;
-        case 'price_asc':
-          designs.sort((a, b) => a.priceMin - b.priceMin);
-          break;
-        case 'price_desc':
-          designs.sort((a, b) => b.priceMax - a.priceMax);
-          break;
-      }
-    }
-
-    return designs;
-  }
-
-  async getDesignById(id: number): Promise<Design | undefined> {
-    return this.designs.get(id);
-  }
-
-  async getFeaturedDesigns(): Promise<Design[]> {
-    return Array.from(this.designs.values()).filter(d => d.isFeatured);
-  }
-
-  async getDesignsByCategory(categoryId: number): Promise<Design[]> {
-    return Array.from(this.designs.values()).filter(d => d.categoryId === categoryId);
-  }
-
-  async createDesign(design: InsertDesign): Promise<Design> {
-    const newDesign: Design = { 
-      id: this.currentDesignId++,
-      name: design.name,
-      description: design.description,
-      categoryId: design.categoryId || null,
-      imageUrl: design.imageUrl,
-      additionalImages: design.additionalImages || [],
-      priceMin: design.priceMin,
-      priceMax: design.priceMax,
-      estimatedDays: design.estimatedDays,
-      isPopular: design.isPopular || false,
-      isFeatured: design.isFeatured || false,
-      placement: design.placement || null,
-      fabricTypes: design.fabricTypes || [],
-      createdAt: new Date()
-    };
-    this.designs.set(newDesign.id, newDesign);
-    return newDesign;
-  }
-
-  async getOrder(orderId: string): Promise<Order | undefined> {
-    return this.orders.get(orderId);
-  }
-
-  async getOrderByEmailAndPhone(email: string, phone: string): Promise<Order[]> {
-    return Array.from(this.orders.values()).filter(
-      o => o.customerEmail === email && o.customerPhone === phone
-    );
-  }
-
-  async createOrder(order: InsertOrder): Promise<Order> {
-    const orderId = `KTW${Date.now()}${Math.floor(Math.random() * 1000)}`;
-    const orderId = `KTW${Date.now()}${Math.floor(Math.random() * 1000)}`;
-    // Ensure all fields of Order are correctly populated, especially new optional ones
-    const newOrder: Order = {
-      // Explicitly list all required fields from InsertOrder
-      customerName: order.customerName,
-      customerEmail: order.customerEmail,
-      customerPhone: order.customerPhone,
-      customerAddress: order.customerAddress,
-      garmentType: order.garmentType,
-      totalAmount: order.totalAmount,
-      advanceAmount: order.advanceAmount,
-      // Optional fields from InsertOrder
-      designId: order.designId === undefined ? null : order.designId,
-      customDesignUrl: order.customDesignUrl === undefined ? null : order.customDesignUrl,
-      garmentImageUrl: order.garmentImageUrl === undefined ? null : order.garmentImageUrl,
-      sizeNotes: order.sizeNotes === undefined ? null : order.sizeNotes,
-      comments: order.comments === undefined ? null : order.comments,
-      status: order.status || "awaiting_cloth", // Default if not provided
-      trackingId: order.trackingId === undefined ? null : order.trackingId,
-      courierPartner: order.courierPartner === undefined ? null : order.courierPartner,
-      estimatedDelivery: order.estimatedDelivery === undefined ? null : order.estimatedDelivery,
-      userId: order.userId === undefined ? null : order.userId, // Handle new userId
-      // Fields generated by MemStorage
-      id: this.currentOrderId++,
-      orderId,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-    this.orders.set(orderId, newOrder);
-    return newOrder;
-  }
-
-  async updateOrderStatus(orderId: string, status: string, trackingId?: string): Promise<Order | undefined> {
-    const order = this.orders.get(orderId);
-    if (!order) return undefined;
-
-    const updatedOrder: Order = { 
-      ...order, 
-      status, 
-      trackingId: trackingId || order.trackingId,
-      updatedAt: new Date()
-    };
-    this.orders.set(orderId, updatedOrder);
-    return updatedOrder;
-  }
-
-  async getActiveTestimonials(): Promise<Testimonial[]> {
-    return Array.from(this.testimonials.values()).filter(t => t.isActive);
-  }
-
-  async createTestimonial(testimonial: InsertTestimonial): Promise<Testimonial> {
-    const newTestimonial: Testimonial = { ...testimonial, id: this.currentTestimonialId++ };
-    this.testimonials.set(newTestimonial.id, newTestimonial);
-    return newTestimonial;
-  }
-
-  async createUser(user: InsertUser): Promise<User> {
-    if (Array.from(this.users.values()).find(u => u.email === user.email)) {
-      throw new Error("Email already exists");
-    }
-    const newUser: User = {
-      id: this.currentUserId++,
-      email: user.email,
-      passwordHash: user.passwordHash,
-      role: user.role || 'user',
-      createdAt: new Date(),
-    };
-    this.users.set(newUser.id, newUser);
-    return newUser;
-  }
-
-  async getUserByEmail(email: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(u => u.email === email);
-  }
-
-  // Motifs MemStorage
-  async getMotifs(filters?: { category?: string; complexity?: string }): Promise<Motif[]> {
-    let allMotifs = Array.from(this.motifs.values());
-    if (filters?.category) {
-      allMotifs = allMotifs.filter(m => m.category === filters.category);
-    }
-    if (filters?.complexity) {
-      allMotifs = allMotifs.filter(m => m.complexity === filters.complexity);
-    }
-    return allMotifs;
-  }
-
-  async getMotifById(id: number): Promise<Motif | undefined> {
-    return this.motifs.get(id);
-  }
-
-  async createMotif(motif: InsertMotif): Promise<Motif> {
-    const newMotif: Motif = {
-      id: this.currentMotifId++,
-      name: motif.name,
-      description: motif.description ?? null,
-      imageUrl: motif.imageUrl ?? null,
-      category: motif.category ?? null,
-      complexity: motif.complexity ?? null,
-      // applications default is handled by schema/zod, but ensure it's an array for Motif type
-      applications: motif.applications || [],
-      createdAt: new Date(),
-    };
-    this.motifs.set(newMotif.id, newMotif);
-    return newMotif;
-  }
-}
+// MemStorage class has been removed. DatabaseStorage is now the sole implementation.
 
 export class DatabaseStorage implements IStorage {
   async getCategories(): Promise<Category[]> {
@@ -572,9 +73,18 @@ export class DatabaseStorage implements IStorage {
     let query = db.select().from(designs);
     
     if (filters?.categoryId) {
-      query = query.where(eq(designs.categoryId, filters.categoryId));
+      // Ensure correct type for query.where if it's assigned back
+      query = query.where(eq(designs.categoryId, filters.categoryId)) as any;
     }
-    
+    // Add other filters for priceMin, priceMax, sortBy if needed, ensuring proper chaining
+    // For example:
+    // if (filters?.priceMin !== undefined) {
+    //   query = query.where(gte(designs.priceMax, filters.priceMin)) as any;
+    // }
+    // if (filters?.priceMax !== undefined) {
+    //   query = query.where(lte(designs.priceMin, filters.priceMax)) as any;
+    // }
+    // Add sorting logic if filters.sortBy is present
     return await query;
   }
 
@@ -620,7 +130,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateOrderStatus(orderId: string, status: string, trackingId?: string): Promise<Order | undefined> {
-    const updateData: any = { status, updatedAt: new Date() };
+    const updateData: Partial<Order> = { status, updatedAt: new Date() };
     if (trackingId) {
       updateData.trackingId = trackingId;
     }
@@ -663,17 +173,16 @@ export class DatabaseStorage implements IStorage {
   async getMotifs(filters?: { category?: string; complexity?: string }): Promise<Motif[]> {
     const conditions: SQL[] = [];
     if (filters?.category) {
-      // Ensure motifs.category is not null before comparing, or handle null category filter if needed
       conditions.push(eq(motifs.category, filters.category));
     }
     if (filters?.complexity) {
-      // Ensure motifs.complexity is not null before comparing
       conditions.push(eq(motifs.complexity, filters.complexity));
     }
 
     let query = db.select().from(motifs);
     if (conditions.length > 0) {
-      query = query.where(and(...conditions));
+      // Ensure correct type for query.where if it's assigned back
+      query = query.where(and(...conditions)) as any;
     }
     return await query;
   }

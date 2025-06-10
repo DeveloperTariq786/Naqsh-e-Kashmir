@@ -1,53 +1,42 @@
 import { Link } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-
-const motifs = [
-  {
-    id: 1,
-    name: "Floral",
-    description: "Traditional Kashmiri flowers",
-    image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300",
-    category: "Traditional"
-  },
-  {
-    id: 2,
-    name: "Chinar Leaf",
-    description: "Iconic maple leaf patterns",
-    image: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300",
-    category: "Nature"
-  },
-  {
-    id: 3,
-    name: "Paisley Buti",
-    description: "Classic paisley motifs",
-    image: "https://images.unsplash.com/photo-1571115764595-644a1f56a55c?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300",
-    category: "Classic"
-  },
-  {
-    id: 4,
-    name: "Geometric",
-    description: "Modern geometric patterns",
-    image: "https://images.unsplash.com/photo-1583391733981-6c1c6a8b93ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300",
-    category: "Contemporary"
-  },
-  {
-    id: 5,
-    name: "Rose Garden",
-    description: "Delicate rose patterns",
-    image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300",
-    category: "Floral"
-  },
-  {
-    id: 6,
-    name: "Vine Border",
-    description: "Elegant vine patterns",
-    image: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300",
-    category: "Border"
-  }
-];
+import type { Motif } from "@shared/schema";
 
 export default function MotifsSection() {
+  const { data: motifs, isLoading } = useQuery<Motif[]>({
+    queryKey: ["/api/motifs"],
+  });
+
+  if (isLoading) {
+    return (
+      <section className="py-16 bg-gradient-to-br from-cream via-white to-rose-gold/10">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-playfair font-bold text-kashmiri-red mb-4">
+              Browse Embroidery Motifs
+            </h2>
+            <p className="text-lg text-warm-gray max-w-2xl mx-auto mb-2">
+              Loading motifs...
+            </p>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-12">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="bg-white rounded-2xl shadow-lg overflow-hidden animate-pulse">
+                <div className="aspect-square bg-gray-200" />
+                <div className="p-4">
+                  <div className="h-4 bg-gray-200 rounded mb-2 w-3/4" />
+                  <div className="h-3 bg-gray-200 rounded w-full" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="py-16 bg-gradient-to-br from-cream via-white to-rose-gold/10">
       <div className="container mx-auto px-4">
@@ -66,7 +55,7 @@ export default function MotifsSection() {
 
         {/* Motifs Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-12">
-          {motifs.map((motif) => (
+          {motifs?.map((motif) => (
             <Link
               key={motif.id}
               href={`/motifs/${motif.id}`}
@@ -75,7 +64,7 @@ export default function MotifsSection() {
               <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group-hover:scale-105">
                 <div className="relative aspect-square overflow-hidden">
                   <img
-                    src={motif.image}
+                    src={motif.imageUrl ?? undefined}
                     alt={motif.name}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
