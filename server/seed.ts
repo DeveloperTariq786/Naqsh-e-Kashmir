@@ -1,8 +1,16 @@
 import { db } from "./db";
-import { categories, designs, testimonials } from "@shared/schema";
+import { categories, designs, testimonials, motifs } from "@shared/schema";
 
 async function seed() {
-  console.log("🌱 Seeding database...");
+  console.log("🌱 Starting seed process...");
+
+  // Clear existing data
+  console.log("Clearing existing data...");
+  await db.delete(designs);
+  await db.delete(categories);
+  await db.delete(testimonials);
+  await db.delete(motifs);
+  console.log("✅ Existing data cleared");
 
   // Seed categories
   const categoryData = [
@@ -148,6 +156,61 @@ async function seed() {
 
   const insertedTestimonials = await db.insert(testimonials).values(testimonialData).returning();
   console.log(`✅ Inserted ${insertedTestimonials.length} testimonials`);
+
+  // Seed motifs
+  const motifData = [
+    {
+      name: "Floral",
+      description: "Traditional Kashmiri flowers",
+      imageUrl: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300",
+      category: "Traditional",
+      complexity: "Medium",
+      applications: ["Neckline", "Border", "All-over"],
+    },
+    {
+      name: "Chinar Leaf",
+      description: "Iconic maple leaf patterns",
+      imageUrl: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300",
+      category: "Nature",
+      complexity: "Medium",
+      applications: ["Border", "All-over", "Shawl"],
+    },
+    {
+      name: "Paisley Buti",
+      description: "Classic paisley motifs",
+      imageUrl: "https://images.unsplash.com/photo-1571115764595-644a1f56a55c?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300",
+      category: "Classic",
+      complexity: "High",
+      applications: ["All-over", "Border", "Neckline"],
+    },
+    {
+      name: "Geometric",
+      description: "Modern geometric patterns",
+      imageUrl: "https://images.unsplash.com/photo-1583391733981-6c1c6a8b93ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300",
+      category: "Contemporary",
+      complexity: "Medium",
+      applications: ["Border", "Sleeve", "Panel"],
+    },
+    {
+      name: "Rose Garden",
+      description: "Delicate rose patterns",
+      imageUrl: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300",
+      category: "Floral",
+      complexity: "High",
+      applications: ["All-over", "Border", "Neckline"],
+    },
+    {
+      name: "Vine Border",
+      description: "Elegant vine patterns",
+      imageUrl: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300",
+      category: "Border",
+      complexity: "Medium",
+      applications: ["Border", "Sleeve", "Hem"],
+    }
+  ];
+
+  const insertedMotifs = await db.insert(motifs).values(motifData).returning();
+  console.log(`✅ Inserted ${insertedMotifs.length} motifs`);
 
   console.log("🎉 Database seeding completed successfully!");
 }
