@@ -1,10 +1,10 @@
 import { 
-  categories, designs, orders, testimonials, users,
-  type Category, type Design, type Order, type Testimonial, type User,
-  type InsertCategory, type InsertDesign, type InsertOrder, type InsertTestimonial, type InsertUser
+  categories, designs, orders, testimonials, users, motifs, // Added motifs table
+  type Category, type Design, type Order, type Testimonial, type User, type Motif, // Added Motif type
+  type InsertCategory, type InsertDesign, type InsertOrder, type InsertTestimonial, type InsertUser, type InsertMotif // Added InsertMotif type
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and } from "drizzle-orm";
+import { eq, and, SQL } from "drizzle-orm"; // Added SQL for dynamic conditions
 
 export interface IStorage {
   // Categories
@@ -37,6 +37,11 @@ export interface IStorage {
   // Users
   createUser(user: InsertUser): Promise<User>;
   getUserByEmail(email: string): Promise<User | undefined>;
+
+  // Motifs
+  getMotifs(filters?: { category?: string; complexity?: string }): Promise<Motif[]>;
+  getMotifById(id: number): Promise<Motif | undefined>;
+  createMotif(motif: InsertMotif): Promise<Motif>;
 }
 
 export class MemStorage implements IStorage {
@@ -45,11 +50,13 @@ export class MemStorage implements IStorage {
   private orders: Map<string, Order> = new Map();
   private testimonials: Map<number, Testimonial> = new Map();
   private users: Map<number, User> = new Map();
+  private motifs: Map<number, Motif> = new Map(); // Added motifs map
   private currentCategoryId = 1;
   private currentDesignId = 1;
   private currentOrderId = 1;
   private currentTestimonialId = 1;
   private currentUserId = 1;
+  private currentMotifId = 1; // Added currentMotifId
 
   constructor() {
     this.seedData();
@@ -234,6 +241,94 @@ export class MemStorage implements IStorage {
       };
       this.testimonials.set(newTestimonial.id, newTestimonial);
     });
+
+    // Seed Motifs
+    const motifData: Omit<InsertMotif, 'createdAt'>[] = [
+      {
+        name: "Traditional Paisley",
+        category: "Classic",
+        description: "Iconic teardrop-shaped motifs with intricate details",
+        imageUrl: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400",
+        complexity: "Medium",
+        applications: ["Neckline", "Border", "All-over"]
+      },
+      {
+        name: "Chinar Leaf",
+        category: "Nature",
+        description: "Kashmir's iconic maple leaf in various sizes",
+        imageUrl: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400",
+        complexity: "Simple",
+        applications: ["Border", "Corner", "Scattered"]
+      },
+      {
+        name: "Rose Garden",
+        category: "Floral",
+        description: "Delicate roses with stems and leaves",
+        imageUrl: "https://images.unsplash.com/photo-1571115764595-644a1f56a55c?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400",
+        complexity: "Complex",
+        applications: ["All-over", "Panel", "Dupatta"]
+      },
+      {
+        name: "Geometric Diamond",
+        category: "Contemporary",
+        description: "Modern diamond patterns with clean lines",
+        imageUrl: "https://images.unsplash.com/photo-1583391733981-6c1c6a8b93ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400",
+        complexity: "Simple",
+        applications: ["Border", "Repeat Pattern", "Neckline"]
+      },
+      {
+        name: "Vine Scroll",
+        category: "Traditional",
+        description: "Flowing vine patterns with small flowers",
+        imageUrl: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400",
+        complexity: "Medium",
+        applications: ["Border", "Sleeve", "Hem"]
+      },
+      {
+        name: "Lotus Blossom",
+        category: "Floral",
+        description: "Sacred lotus flowers in full bloom",
+        imageUrl: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400",
+        complexity: "Complex",
+        applications: ["Center Panel", "Medallion", "Corner"]
+      },
+      {
+        name: "Buti Dots",
+        category: "Classic",
+        description: "Small decorative dots and mini paisleys",
+        imageUrl: "https://images.unsplash.com/photo-1571115764595-644a1f56a55c?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400",
+        complexity: "Simple",
+        applications: ["Fill Pattern", "Background", "Scattered"]
+      },
+      {
+        name: "Persian Arch",
+        category: "Architectural",
+        description: "Ornate arches with detailed borders",
+        imageUrl: "https://images.unsplash.com/photo-1583391733981-6c1c6a8b93ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400",
+        complexity: "Complex",
+        applications: ["Panel", "Yoke", "Central Design"]
+      },
+      {
+        name: "Almond Cluster",
+        category: "Nature",
+        description: "Groups of almonds with decorative leaves",
+        imageUrl: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400",
+        complexity: "Medium",
+        applications: ["Repeat Pattern", "Border", "Corner"]
+      }
+    ];
+
+    motifData.forEach(m => {
+      const motifToCreate: InsertMotif = {
+        name: m.name,
+        description: m.description,
+        imageUrl: m.imageUrl,
+        category: m.category,
+        complexity: m.complexity,
+        applications: m.applications || [],
+      };
+      this.createMotif(motifToCreate); // createMotif is synchronous in MemStorage
+    });
   }
 
   async getCategories(): Promise<Category[]> {
@@ -416,6 +511,38 @@ export class MemStorage implements IStorage {
   async getUserByEmail(email: string): Promise<User | undefined> {
     return Array.from(this.users.values()).find(u => u.email === email);
   }
+
+  // Motifs MemStorage
+  async getMotifs(filters?: { category?: string; complexity?: string }): Promise<Motif[]> {
+    let allMotifs = Array.from(this.motifs.values());
+    if (filters?.category) {
+      allMotifs = allMotifs.filter(m => m.category === filters.category);
+    }
+    if (filters?.complexity) {
+      allMotifs = allMotifs.filter(m => m.complexity === filters.complexity);
+    }
+    return allMotifs;
+  }
+
+  async getMotifById(id: number): Promise<Motif | undefined> {
+    return this.motifs.get(id);
+  }
+
+  async createMotif(motif: InsertMotif): Promise<Motif> {
+    const newMotif: Motif = {
+      id: this.currentMotifId++,
+      name: motif.name,
+      description: motif.description ?? null,
+      imageUrl: motif.imageUrl ?? null,
+      category: motif.category ?? null,
+      complexity: motif.complexity ?? null,
+      // applications default is handled by schema/zod, but ensure it's an array for Motif type
+      applications: motif.applications || [],
+      createdAt: new Date(),
+    };
+    this.motifs.set(newMotif.id, newMotif);
+    return newMotif;
+  }
 }
 
 export class DatabaseStorage implements IStorage {
@@ -530,6 +657,38 @@ export class DatabaseStorage implements IStorage {
   async getUserByEmail(email: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.email, email));
     return user || undefined;
+  }
+
+  // Motifs DatabaseStorage
+  async getMotifs(filters?: { category?: string; complexity?: string }): Promise<Motif[]> {
+    const conditions: SQL[] = [];
+    if (filters?.category) {
+      // Ensure motifs.category is not null before comparing, or handle null category filter if needed
+      conditions.push(eq(motifs.category, filters.category));
+    }
+    if (filters?.complexity) {
+      // Ensure motifs.complexity is not null before comparing
+      conditions.push(eq(motifs.complexity, filters.complexity));
+    }
+
+    let query = db.select().from(motifs);
+    if (conditions.length > 0) {
+      query = query.where(and(...conditions));
+    }
+    return await query;
+  }
+
+  async getMotifById(id: number): Promise<Motif | undefined> {
+    const [motif] = await db.select().from(motifs).where(eq(motifs.id, id));
+    return motif || undefined;
+  }
+
+  async createMotif(motif: InsertMotif): Promise<Motif> {
+    const [newMotif] = await db
+      .insert(motifs)
+      .values(motif)
+      .returning();
+    return newMotif;
   }
 }
 

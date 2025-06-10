@@ -9,6 +9,7 @@ import { categoriesRouter } from './api/categories.routes';
 import { designsRouter } from './api/designs.routes';
 import { ordersRouter } from './api/orders.routes';
 import { testimonialsRouter } from './api/testimonials.routes';
+import { motifsRouter } from './api/motifs.routes'; // Import motifsRouter
 
 // Note: JWT_SECRET and other specific dependencies like bcrypt, specific schemas (insertUserSchema, authSchema, insertOrderSchema),
 // z from zod, and storage are now primarily handled within their respective route modules (e.g., auth.routes.ts, orders.routes.ts).
@@ -26,6 +27,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use("/api/designs", designsRouter);
   app.use("/api/orders", ordersRouter);
   app.use("/api/testimonials", testimonialsRouter);
+  app.use("/api/motifs", motifsRouter); // Mount motifsRouter
 
   // All individual route definitions previously here have been moved to their respective router files in server/api/
 

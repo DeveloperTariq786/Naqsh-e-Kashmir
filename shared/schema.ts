@@ -70,6 +70,17 @@ export const users = pgTable("users", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const motifs = pgTable("motifs", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description"),
+  imageUrl: text("image_url"),
+  category: text("category"),
+  complexity: text("complexity"),
+  applications: text("applications").array().default([]).notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export const insertCategorySchema = createInsertSchema(categories).omit({
   id: true,
   designCount: true,
@@ -96,14 +107,24 @@ export const insertUserSchema = createInsertSchema(users).omit({
   createdAt: true,
 });
 
+export const insertMotifSchema = createInsertSchema(motifs, {
+  name: z.string().min(1, { message: "Name is required" }),
+  applications: z.array(z.string()).default([]),
+}).omit({
+  id: true,
+  createdAt: true,
+});
+
 export type Category = typeof categories.$inferSelect;
 export type Design = typeof designs.$inferSelect;
 export type Order = typeof orders.$inferSelect;
 export type Testimonial = typeof testimonials.$inferSelect;
 export type User = typeof users.$inferSelect;
+export type Motif = typeof motifs.$inferSelect;
 
 export type InsertCategory = z.infer<typeof insertCategorySchema>;
 export type InsertDesign = z.infer<typeof insertDesignSchema>;
 export type InsertOrder = z.infer<typeof insertOrderSchema>;
 export type InsertTestimonial = z.infer<typeof insertTestimonialSchema>;
 export type InsertUser = z.infer<typeof insertUserSchema>;
+export type InsertMotif = z.infer<typeof insertMotifSchema>;
