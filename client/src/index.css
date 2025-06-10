@@ -1,0 +1,172 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+:root {
+  --background: 45 11% 98%; /* #FEF7ED */
+  --foreground: 20 14.3% 4.1%;
+  --muted: 60 4.8% 95.9%;
+  --muted-foreground: 25 5.3% 44.7%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 20 14.3% 4.1%;
+  --card: 0 0% 100%;
+  --card-foreground: 20 14.3% 4.1%;
+  --border: 20 5.9% 90%;
+  --input: 20 5.9% 90%;
+  --primary: 347 77% 50%; /* #B91C2C - kashmiri-red */
+  --primary-foreground: 0 0% 100%;
+  --secondary: 43 70% 60%; /* #E6914C - saffron */
+  --secondary-foreground: 0 0% 100%;
+  --accent: 43 89% 81%; /* #F7DBA7 - rose-gold */
+  --accent-foreground: 20 14.3% 4.1%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 60 9.1% 97.8%;
+  --ring: 20 14.3% 4.1%;
+  --radius: 0.5rem;
+
+  /* Custom Kashmiri colors */
+  --saffron: 43 70% 60%; /* #E6914C */
+  --kashmiri-red: 347 77% 50%; /* #B91C2C */
+  --rose-gold: 43 89% 81%; /* #F7DBA7 */
+  --cream: 45 11% 98%; /* #FEF7ED */
+  --deep-teal: 174 67% 18%; /* #134E4A */
+  --royal-blue: 225 76% 33%; /* #1E3A8A */
+  --warm-gray: 30 6% 46%; /* #78716C */
+}
+
+.dark {
+  --background: 240 10% 3.9%;
+  --foreground: 0 0% 98%;
+  --muted: 240 3.7% 15.9%;
+  --muted-foreground: 240 5% 64.9%;
+  --popover: 240 10% 3.9%;
+  --popover-foreground: 0 0% 98%;
+  --card: 240 10% 3.9%;
+  --card-foreground: 0 0% 98%;
+  --border: 240 3.7% 15.9%;
+  --input: 240 3.7% 15.9%;
+  --primary: 347 77% 50%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 240 3.7% 15.9%;
+  --secondary-foreground: 0 0% 98%;
+  --accent: 240 3.7% 15.9%;
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 98%;
+  --ring: 240 4.9% 83.9%;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .font-playfair {
+    font-family: 'Playfair Display', serif;
+  }
+
+  .bg-saffron {
+    background-color: hsl(var(--saffron));
+  }
+
+  .bg-kashmiri-red {
+    background-color: hsl(var(--kashmiri-red));
+  }
+
+  .bg-rose-gold {
+    background-color: hsl(var(--rose-gold));
+  }
+
+  .bg-cream {
+    background-color: hsl(var(--cream));
+  }
+
+  .bg-deep-teal {
+    background-color: hsl(var(--deep-teal));
+  }
+
+  .bg-royal-blue {
+    background-color: hsl(var(--royal-blue));
+  }
+
+  .bg-warm-gray {
+    background-color: hsl(var(--warm-gray));
+  }
+
+  .text-saffron {
+    color: hsl(var(--saffron));
+  }
+
+  .text-kashmiri-red {
+    color: hsl(var(--kashmiri-red));
+  }
+
+  .text-rose-gold {
+    color: hsl(var(--rose-gold));
+  }
+
+  .text-cream {
+    color: hsl(var(--cream));
+  }
+
+  .text-deep-teal {
+    color: hsl(var(--deep-teal));
+  }
+
+  .text-royal-blue {
+    color: hsl(var(--royal-blue));
+  }
+
+  .text-warm-gray {
+    color: hsl(var(--warm-gray));
+  }
+
+  .border-saffron {
+    border-color: hsl(var(--saffron));
+  }
+
+  .border-kashmiri-red {
+    border-color: hsl(var(--kashmiri-red));
+  }
+
+  .border-rose-gold {
+    border-color: hsl(var(--rose-gold));
+  }
+
+  .hover\:bg-saffron:hover {
+    background-color: hsl(var(--saffron));
+  }
+
+  .hover\:bg-kashmiri-red:hover {
+    background-color: hsl(var(--kashmiri-red));
+  }
+
+  .hover\:text-kashmiri-red:hover {
+    color: hsl(var(--kashmiri-red));
+  }
+
+  .hover\:text-saffron:hover {
+    color: hsl(var(--saffron));
+  }
+}
+
+@layer utilities {
+  .kashmiri-gradient {
+    @apply bg-gradient-to-r from-saffron to-kashmiri-red;
+  }
+
+  .kashmiri-gradient-subtle {
+    @apply bg-gradient-to-br from-cream to-rose-gold/20;
+  }
+
+  .hero-gradient {
+    background: linear-gradient(135deg, hsl(var(--kashmiri-red)) 0%, hsl(var(--saffron)) 100%);
+  }
+}

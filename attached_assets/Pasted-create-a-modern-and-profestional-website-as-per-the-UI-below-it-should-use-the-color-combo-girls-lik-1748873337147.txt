@@ -1,0 +1,146 @@
+create a modern and profestional website as per the UI below it should use the color combo girls like this is women website also add the kashmiri feelong with the color font and the UI 
+ Home Page
+✨ Top Section (Hero Banner)
+Full-width image of traditional Tella embroidery being done
+
+Tagline: “Bring your fabric to life with authentic Kashmiri Tella work”
+
+CTA Buttons:
+
+[Explore Designs]
+
+[How It Works]
+
+🧵 Featured Categories (Visual Grid)
+Section titled "Explore by Category"
+
+2x3 or 3x3 grid of large category tiles:
+
+Neckline Designs, Borders, Shawls, Sleeves, Floral, etc.
+
+Each tile: Image + Category title → links to filtered gallery
+
+🌟 Featured Designs Carousel
+Carousel or horizontal scroll of top 5–10 designs
+
+Each card: Design image, name, price range, [View Design] button
+
+📦 How It Works (3-Step Visual Section)
+Choose a Design
+
+Courier Your Garment
+
+We Apply & Send Back
+
+Each step has an icon/image + description
+
+💬 Testimonials Section
+“What our customers say” with 2–3 short quotes and photos
+
+📱 Contact & Footer
+WhatsApp icon, social media links
+
+Footer links: About | Designs | Categories | Order Tracking | Contact
+
+🧩 2. Design Gallery Page /designs
+🧰 Filters Sidebar (Left)
+Category filters (checkboxes)
+
+Price Range slider
+
+Fabric Type dropdown (optional)
+
+Sort by: Popular, Newest, Price
+
+📸 Design Grid (Right/Main)
+Cards showing:
+
+Design image
+
+Title
+
+Short description
+
+Price Range
+
+[Apply to My Garment] button
+
+🔍 3. Design Details Page /design/:id
+🎨 Design Showcase
+Large image slider (zoomable)
+
+Title & category tags
+
+Description, estimated time, size info
+
+🧵 CTA Panel
+[Apply This Design to My Cloth]
+
+Estimated Cost & Duration
+
+FAQs (e.g. Can this fit on a shawl?)
+
+📤 4. Custom Order Flow (Multi-step form)
+Step 1: Choose Design
+
+Auto-filled if came from a design page
+
+Optional: Upload your own custom design
+
+Step 2: Select Garment Type
+
+Radio buttons: Shawl, Pheran, Kurta, Others
+
+Upload photo of your cloth (optional)
+
+Step 3: Enter Details
+
+Size or placement notes
+
+Extra comments box (e.g. “Just neckline only”)
+
+Step 4: Delivery Info
+
+Name, Email, Phone, Address
+
+Step 5: Payment
+
+Choose UPI/Card/Netbanking
+
+Advance payment
+
+Step 6: Confirmation
+
+Show Order Summary
+
+Display Courier Instructions
+
+Option to Upload tracking ID
+
+🚚 5. Courier Instructions Page /how-to-send
+Step-by-step guide:
+
+How to pack your garment
+
+Address to send to
+
+How to track shipment
+
+Google Maps Embed (optional)
+
+FAQ: What if I don't send in time?
+
+🔍 6. Order Tracking Page /track
+Input Order ID or Email + Phone
+
+Shows progress:
+
+Awaiting Cloth
+
+Cloth Received
+
+Work in Progress
+
+Shipped Back
+
+Completed
